@@ -22,7 +22,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-OutputBaseFilename=balatro-save-and-load
+OutputBaseFilename=balatro-save-and-load-setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
