@@ -6,6 +6,21 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>save-and-load.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="save-and-load.ico" />
+    <None Remove="save-and-load.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="save-and-load.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="save-and-load.ico" />
+    <Resource Include="save-and-load.png" />
+  </ItemGroup>
 
 </Project>

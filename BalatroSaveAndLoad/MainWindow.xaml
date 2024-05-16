@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BalatroSaveAndLoad"
         mc:Ignorable="d"
-        Title="Balatro Save And Load" Height="400" Width="450">
+        Title="Balatro Save And Load" Height="400" Width="450" Icon="/save-and-load.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
