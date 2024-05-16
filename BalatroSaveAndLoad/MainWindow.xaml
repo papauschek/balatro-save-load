@@ -1,0 +1,21 @@
+﻿<Window x:Class="BalatroSaveAndLoad.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BalatroSaveAndLoad"
+        mc:Ignorable="d"
+        Title="Balatro Save And Load" Height="400" Width="450">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ListBox Name="FileListBox" Margin="10,75,10,39" SelectionChanged="FileListBox_SelectionChanged"/>
+        <Button Content="Save" Margin="203,10,10,0" VerticalAlignment="Top" Click="Save_Button_Click" Height="22"/>
+        <ComboBox Margin="10,10,0,0" VerticalAlignment="Top" Name="ProfileComboBox" HorizontalAlignment="Left" Width="188" />
+        <Button Content="Load" Margin="10,0,10,10" Click="Load_Button_Click" Height="22" VerticalAlignment="Bottom" Name="LoadButton" IsEnabled="False" />
+        <CheckBox Name="AutoCheckBox" Content="Auto Save every" Height="24" Margin="0,46,128,0" VerticalAlignment="Top" Checked="CheckBox_Checked" HorizontalAlignment="Right" Width="106"/>
+        <ComboBox Name="MinuteComboBox" Margin="0,42,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="105" SelectionChanged="MinuteComboBox_SelectionChanged" />
+
+    </Grid>
+</Window>
