@@ -12,6 +12,9 @@ A simple tool that allows you to save your Balatro game at any point, and load i
   * Select the save file in the list, and click "Load". WARNING! Your current run in Balatro will be overwritten!
   * In Balatro: continue your current run, it will be the one you just loaded.
 
+## Download
+
+Download the latest release here: https://github.com/papauschek/balatro-save-load/releases/tag/v1.0.0
 
 ## Screenshot
 ![image](https://github.com/papauschek/balatro-save-load/assets/1398727/9a5bd799-37ea-4704-9ead-fa63ce22b87e)
