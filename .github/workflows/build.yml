@@ -27,21 +27,20 @@ jobs:
     - name: Publish
       run: dotnet publish BalatroSaveAndLoad/BalatroSaveAndLoad.csproj -c Release -o publish --self-contained true -r win-x64 /p:PublishSingleFile=true
 
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: BalatroSaveAndLoad
+        path: publish/*
+
     - name: Install Inno Setup
       run: choco install innosetup -y
 
     - name: Create Installer
       run: iscc /DMyAppVersion="${{ github.ref_name }}" InnoSetup/setup.iss
 
-    - name: Upload executable artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: BalatroSaveAndLoad
-        path: publish/BalatroSaveAndLoad.exe
-
     - name: Upload installer artifact
       uses: actions/upload-artifact@v4
       with:
         name: BalatroSaveAndLoadInstaller
         path: Output/balatro-save-and-load-setup.exe
-
