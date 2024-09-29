@@ -47,6 +47,7 @@ namespace BalatroSaveAndLoad
             var files = Directory.GetFileSystemEntries(directoryPath, "*.jkr");
             var fileNames = files.Select(file => Path.GetFileName(file)).OrderByDescending(file => file);
             FileListBox.ItemsSource = fileNames;
+            FileListBox.SelectedIndex = -1; // Clear selection
         }
 
         string GetCurrentSaveFile()
@@ -180,15 +181,6 @@ namespace BalatroSaveAndLoad
                     }
                 }
             }
-        }
-
-        // Modify the LoadList method to clear the selection after reloading:
-        void LoadList()
-        {
-            var files = Directory.GetFileSystemEntries(directoryPath, "*.jkr");
-            var fileNames = files.Select(file => Path.GetFileName(file)).OrderByDescending(file => file);
-            FileListBox.ItemsSource = fileNames;
-            FileListBox.SelectedIndex = -1; // Clear selection
         }
     }
 }
