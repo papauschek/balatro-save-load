@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -151,4 +152,42 @@ namespace BalatroSaveAndLoad
             UpdateAutoSave();
         }
     }
+}
+
+private void OpenSavesFolder_Click(object sender, RoutedEventArgs e)
+{
+    Process.Start("explorer.exe", directoryPath);
+}
+
+private void RemoveSave_Click(object sender, RoutedEventArgs e)
+{
+    if (FileListBox.SelectedItem != null)
+    {
+        string selectedFile = FileListBox.SelectedItem.ToString();
+        string filePath = Path.Combine(directoryPath, selectedFile);
+
+        MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete {selectedFile}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            try
+            {
+                File.Delete(filePath);
+                LoadList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while deleting the file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+}
+
+// Modify the LoadList method to clear the selection after reloading:
+void LoadList()
+{
+    var files = Directory.GetFileSystemEntries(directoryPath, "*.jkr");
+    var fileNames = files.Select(file => Path.GetFileName(file)).OrderByDescending(file => file);
+    FileListBox.ItemsSource = fileNames;
+    FileListBox.SelectedIndex = -1; // Clear selection
 }
