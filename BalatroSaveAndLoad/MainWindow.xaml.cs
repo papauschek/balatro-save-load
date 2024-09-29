@@ -40,6 +40,9 @@ namespace BalatroSaveAndLoad
             }
             ProfileComboBox.SelectedIndex = 0;
             MinuteComboBox.SelectedIndex = 0;
+
+            // Enable multiple selection for FileListBox
+            FileListBox.SelectionMode = SelectionMode.Extended;
         }
 
         void LoadList()
@@ -117,12 +120,23 @@ namespace BalatroSaveAndLoad
 
         private void Load_Button_Click(object sender, RoutedEventArgs e)
         {
-            Load();
+            if (FileListBox.SelectedItems.Count == 1)
+            {
+                Load();
+            }
+            else if (FileListBox.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Please select a save file to load.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Please select only one save file to load.", "Multiple Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void FileListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LoadButton.IsEnabled = FileListBox.Items.Count > 0;
+            LoadButton.IsEnabled = FileListBox.SelectedItems.Count == 1;
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -161,23 +175,29 @@ namespace BalatroSaveAndLoad
 
         private void RemoveSave_Click(object sender, RoutedEventArgs e)
         {
-            if (FileListBox.SelectedItem != null)
+            var selectedItems = FileListBox.SelectedItems.Cast<string>().ToList();
+            if (selectedItems.Count > 0)
             {
-                string selectedFile = FileListBox.SelectedItem.ToString();
-                string filePath = Path.Combine(directoryPath, selectedFile);
+                string message = selectedItems.Count == 1
+                    ? $"Are you sure you want to delete the selected save?"
+                    : $"Are you sure you want to delete {selectedItems.Count} selected saves?";
 
-                MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete {selectedFile}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                MessageBoxResult result = MessageBox.Show(message, "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 if (result == MessageBoxResult.Yes)
                 {
                     try
                     {
-                        File.Delete(filePath);
+                        foreach (string selectedFile in selectedItems)
+                        {
+                            string filePath = Path.Combine(directoryPath, selectedFile);
+                            File.Delete(filePath);
+                        }
                         LoadList();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"An error occurred while deleting the file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"An error occurred while deleting the file(s): {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }

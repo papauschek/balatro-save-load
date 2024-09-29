@@ -10,7 +10,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ListBox Name="FileListBox" Margin="10,75,10,39" SelectionChanged="FileListBox_SelectionChanged">
+        <ListBox Name="FileListBox" Margin="10,75,10,39" SelectionChanged="FileListBox_SelectionChanged" SelectionMode="Extended">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Remove" Click="RemoveSave_Click"/>
