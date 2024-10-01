@@ -202,5 +202,15 @@ namespace BalatroSaveAndLoad
                 }
             }
         }
+
+        private void FileListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                DeleteSelectedSaves();
+            }
+        }
+
+        
     }
 }
