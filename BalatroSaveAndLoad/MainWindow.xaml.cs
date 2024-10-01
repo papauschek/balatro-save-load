@@ -175,6 +175,10 @@ namespace BalatroSaveAndLoad
 
         private void RemoveSave_Click(object sender, RoutedEventArgs e)
         {
+            DeleteSelectedSaves();
+        }
+        private void DeleteSelectedSaves()
+        {
             var selectedItems = FileListBox.SelectedItems.Cast<string>().ToList();
             if (selectedItems.Count > 0)
             {
