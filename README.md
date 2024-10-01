@@ -14,18 +14,18 @@ A simple tool that allows you to save your Balatro game at any point, and load i
 
 ## Download
 
-Download the latest release here: https://github.com/adamdyszy/balatro-save-load/releases/tag/v1.1.0
+Download the latest release here: https://github.com/papauschek/balatro-save-load/releases/tag/v1.1.0
 
 ## Screenshot
 ![image](https://github.com/papauschek/balatro-save-load/assets/1398727/9a5bd799-37ea-4704-9ead-fa63ce22b87e)
 
 ## Build Status
 
-[![Build WPF app](https://github.com/adamdyszy/balatro-save-load/actions/workflows/build.yml/badge.svg)](https://github.com/adamdyszy/balatro-save-load/actions/workflows/build.yml)
+[![Build WPF app](https://github.com/papauschek/balatro-save-load/actions/workflows/build.yml/badge.svg)](https://github.com/papauschek/balatro-save-load/actions/workflows/build.yml)
 
 This project is automatically built using GitHub Actions. You can find the latest build artifact by following these steps:
 
-1. Go to the [Actions tab](https://github.com/adamdyszy/balatro-save-load/actions) in this repository.
+1. Go to the [Actions tab](https://github.com/papauschek/balatro-save-load/actions) in this repository.
 2. Click on the latest "Build WPF app" workflow run.
 3. Scroll down to the "Artifacts" section.
 4. Download the "BalatroSaveAndLoad" artifact.
