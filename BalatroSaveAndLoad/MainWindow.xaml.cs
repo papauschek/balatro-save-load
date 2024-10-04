@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -39,6 +40,9 @@ namespace BalatroSaveAndLoad
             }
             ProfileComboBox.SelectedIndex = 0;
             MinuteComboBox.SelectedIndex = 0;
+
+            // Enable multiple selection for FileListBox
+            FileListBox.SelectionMode = SelectionMode.Extended;
         }
 
         void LoadList()
@@ -46,6 +50,7 @@ namespace BalatroSaveAndLoad
             var files = Directory.GetFileSystemEntries(directoryPath, "*.jkr");
             var fileNames = files.Select(file => Path.GetFileName(file)).OrderByDescending(file => file);
             FileListBox.ItemsSource = fileNames;
+            FileListBox.SelectedIndex = -1; // Clear selection
         }
 
         string GetCurrentSaveFile()
@@ -115,12 +120,23 @@ namespace BalatroSaveAndLoad
 
         private void Load_Button_Click(object sender, RoutedEventArgs e)
         {
-            Load();
+            if (FileListBox.SelectedItems.Count == 1)
+            {
+                Load();
+            }
+            else if (FileListBox.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Please select a save file to load.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Please select only one save file to load.", "Multiple Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void FileListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LoadButton.IsEnabled = FileListBox.Items.Count > 0;
+            LoadButton.IsEnabled = FileListBox.SelectedItems.Count == 1;
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -150,5 +166,55 @@ namespace BalatroSaveAndLoad
         {
             UpdateAutoSave();
         }
+
+        
+        private void OpenSavesFolder_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("explorer.exe", directoryPath);
+        }
+
+        private void RemoveSave_Click(object sender, RoutedEventArgs e)
+        {
+            DeleteSelectedSaves();
+        }
+        private void DeleteSelectedSaves()
+        {
+            var selectedItems = FileListBox.SelectedItems.Cast<string>().ToList();
+            if (selectedItems.Count > 0)
+            {
+                string message = selectedItems.Count == 1
+                    ? $"Are you sure you want to delete the selected save?"
+                    : $"Are you sure you want to delete {selectedItems.Count} selected saves?";
+
+                MessageBoxResult result = MessageBox.Show(message, "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        foreach (string selectedFile in selectedItems)
+                        {
+                            string filePath = Path.Combine(directoryPath, selectedFile);
+                            File.Delete(filePath);
+                        }
+                        LoadList();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"An error occurred while deleting the file(s): {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
+        private void FileListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                DeleteSelectedSaves();
+            }
+        }
+
+        
     }
 }
