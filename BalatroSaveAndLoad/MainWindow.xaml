@@ -5,26 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BalatroSaveAndLoad"
         mc:Ignorable="d"
-        Title="Balatro Save And Load" Height="400" Width="450" Icon="/save-and-load.png">
+        Title="Balatro Save And Load" Height="600" Width="450" Icon="/save-and-load.png">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <ListBox Name="FileListBox" Margin="10,75,10,39" 
-         SelectionChanged="FileListBox_SelectionChanged" 
-         SelectionMode="Extended"
-         KeyDown="FileListBox_KeyDown">
+        <ListBox Name="FileListBox" Margin="10,75,10,75"
+                 SelectionChanged="FileListBox_SelectionChanged"
+                 SelectionMode="Extended"
+                 KeyDown="FileListBox_KeyDown">
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Remove" Click="RemoveSave_Click"/>
+                    <MenuItem Header="Remove" Click="RemoveSave_Click" />
                 </ContextMenu>
             </ListBox.ContextMenu>
         </ListBox>
-        <Button Content="Save" Margin="203,10,10,0" VerticalAlignment="Top" Click="Save_Button_Click" Height="22"/>
-        <ComboBox Margin="10,10,0,0" VerticalAlignment="Top" Name="ProfileComboBox" HorizontalAlignment="Left" Width="188" />
-        <Button Content="Load" Margin="10,0,120,10" Click="Load_Button_Click" Height="22" VerticalAlignment="Bottom" Name="LoadButton" IsEnabled="False" />
-        <CheckBox Name="AutoCheckBox" Content="Auto Save every" Height="24" Margin="0,46,128,0" VerticalAlignment="Top" Checked="CheckBox_Checked" HorizontalAlignment="Right" Width="106"/>
-        <ComboBox Name="MinuteComboBox" Margin="0,42,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="105" SelectionChanged="MinuteComboBox_SelectionChanged" />
-        <Button Content="Open Saves Folder" Margin="0,0,10,10" Click="OpenSavesFolder_Click" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="105"/>
+        <Button Content="Save" Margin="203,10,10,0" VerticalAlignment="Top" Click="Save_Button_Click" Height="22" />
+        <ComboBox Margin="10,10,0,0" VerticalAlignment="Top" Name="ProfileComboBox" HorizontalAlignment="Left"
+                  Width="188" />
+        <StatusBar VerticalAlignment="Bottom"
+                   Visibility="Visible"
+                   Margin="10,0,10,10" 
+                   Height = "20"
+                   Width="Auto">
+            <StatusBarItem Name="StatusBarItem" Width="Auto" Background="LightGray" Foreground="Black">
+                <TextBlock Text="{Binding Status}" />
+            </StatusBarItem>
+        </StatusBar>
+        <Button Content="Load" Margin="10,0,120,40" Click="Load_Button_Click" Height="22" VerticalAlignment="Bottom"
+                Name="LoadButton" IsEnabled="False" />
+        <CheckBox Name="AutoCheckBox" Content="Auto Save every" Height="24" Margin="0,46,128,0" VerticalAlignment="Top"
+                  Checked="CheckBox_Checked" HorizontalAlignment="Right" Width="106" />
+        <ComboBox Name="MinuteComboBox"
+                  Margin="0,42,10,0"
+                  VerticalAlignment="Top"
+                  HorizontalAlignment="Right"
+                  Width="105"
+                  SelectionChanged="MinuteComboBox_SelectionChanged"
+                  IsEditable="True"
+                  PreviewTextInput="MinuteComboBox_PreviewTextInput"
+                  KeyDown="MinuteComboBox_KeyDown"
+                  TextBoxBase.TextChanged="MinuteComboBox_TextChanged" />
+        <Button Content="Open Saves Folder" Margin="0,0,10,40" Click="OpenSavesFolder_Click" Height="22"
+                VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="105" />
     </Grid>
 </Window>
