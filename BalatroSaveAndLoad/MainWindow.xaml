@@ -10,7 +10,7 @@
         Foreground="{DynamicResource TextForegroundBrush}"
         WindowStyle="None"
         AllowsTransparency="True"
-        ResizeMode="CanResize">
+        ResizeMode="CanResizeWithGrip">
     <Border Background="{DynamicResource WindowBackgroundBrush}">
         <DockPanel LastChildFill="True">
             <!-- Custom Title Bar -->
@@ -189,7 +189,8 @@
                 <Button Grid.Row="1" Grid.Column="1"
                         Content="Save" Margin="5,0,5,40" VerticalAlignment="Bottom" Click="Save_Button_Click"
                         Height="22"
-                        Style="{StaticResource ThemedButtonStyle}" />
+                        Style="{StaticResource ThemedButtonStyle}"
+                        IsEnabled="{Binding IsSaveEnabled}" />
                 <Button Grid.Row="1" Grid.Column="2"
                         Content="Load" Margin="5,0,5,40"
                         Click="Load_Button_Click" Height="22" VerticalAlignment="Bottom"
@@ -200,6 +201,17 @@
                         Content="Open Saves Folder" Margin="5,0,10,40" Click="OpenSavesFolder_Click" Height="22"
                         VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="Auto"
                         Style="{StaticResource ThemedButtonStyle}" />
+                <CheckBox Grid.Row="1" Grid.Column="0"
+                          Name="ShowDebugWindowCheckBox"
+                          Content="Debug"
+                          Margin="10,0,10,42"
+                          VerticalAlignment="Bottom"
+                          HorizontalAlignment="Left"
+                          Checked="ShowDebugWindowCheckBox_Checked"
+                          Unchecked="ShowDebugWindowCheckBox_Unchecked"
+                          Background="{DynamicResource CheckBoxBackgroundBrush}"
+                          BorderBrush="{DynamicResource CheckBoxBorderBrush}"
+                          Foreground="{DynamicResource CheckBoxForegroundBrush}" />
 
                 <!-- StatusBar (row 2, spans all columns) -->
                 <StatusBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5"
@@ -218,6 +230,9 @@
                                    Visibility="{Binding CountdownVisibility}">
                         <TextBlock Text="{Binding CountdownText}"
                                    Foreground="{DynamicResource StatusBarForegroundBrush}" />
+                    </StatusBarItem>
+                    <StatusBarItem HorizontalAlignment="Right" Background="Transparent">
+                        <TextBlock Text="{Binding BalatroRunningStatus}" Foreground="{DynamicResource StatusBarForegroundBrush}" />
                     </StatusBarItem>
                 </StatusBar>
             </Grid>
