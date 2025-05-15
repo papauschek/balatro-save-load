@@ -20,7 +20,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <!-- Drag area (covers entire title bar, above all controls) -->
+                <!-- Drag area (covers the entire title bar, above all controls) -->
                 <Rectangle Grid.ColumnSpan="8"
                            Margin="2"
                            Fill="Transparent"
@@ -92,17 +92,14 @@
                     </ListBox.ContextMenu>
                 </ListBox>
                 <Button Content="Save" Margin="203,10,10,0" VerticalAlignment="Top" Click="Save_Button_Click" Height="22"
-                        Background="{DynamicResource ButtonBackgroundBrush}"
-                        BorderBrush="{DynamicResource ButtonBorderBrush}"
-                        Foreground="{DynamicResource ButtonForegroundBrush}"/>
+                        Style="{StaticResource ThemedButtonStyle}"/>
                 <ComboBox Margin="10,10,0,0" VerticalAlignment="Top" Name="ProfileComboBox" HorizontalAlignment="Left"
                           Width="188"
-                          Background="{DynamicResource ComboBoxBackgroundBrush}"
-                          BorderBrush="{DynamicResource ComboBoxBorderBrush}"
-                          Foreground="{DynamicResource ComboBoxForegroundBrush}">
+                          Style="{StaticResource ThemedComboBoxStyle}">
                     <ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="Foreground" Value="{DynamicResource ComboBoxForegroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ComboBoxBackgroundBrush}"/>
                         </Style>
                     </ComboBox.ItemContainerStyle>
                 </ComboBox>
@@ -123,9 +120,7 @@
                 </StatusBar>
                 <Button Content="Load" Margin="10,0,120,40" Click="Load_Button_Click" Height="22" VerticalAlignment="Bottom"
                         Name="LoadButton" IsEnabled="False"
-                        Background="{DynamicResource ButtonBackgroundBrush}"
-                        BorderBrush="{DynamicResource ButtonBorderBrush}"
-                        Foreground="{DynamicResource ButtonForegroundBrush}"/>
+                        Style="{StaticResource ThemedButtonStyle}"/>
                 <CheckBox Name="AutoCheckBox" Content="Auto Save every" Height="24" Margin="0,46,128,0" VerticalAlignment="Top"
                           Checked="CheckBox_Checked" HorizontalAlignment="Right" Width="106"
                           Background="{DynamicResource CheckBoxBackgroundBrush}"
@@ -141,20 +136,17 @@
                           PreviewTextInput="MinuteComboBox_PreviewTextInput"
                           KeyDown="MinuteComboBox_KeyDown"
                           TextBoxBase.TextChanged="MinuteComboBox_TextChanged"
-                          Background="{DynamicResource ComboBoxBackgroundBrush}"
-                          BorderBrush="{DynamicResource ComboBoxBorderBrush}"
-                          Foreground="{DynamicResource ComboBoxForegroundBrush}">
+                          Style="{StaticResource ThemedComboBoxStyle}">
                     <ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="Foreground" Value="{DynamicResource ComboBoxForegroundBrush}"/>
+                            <Setter Property="Background" Value="{DynamicResource ComboBoxBackgroundBrush}"/>
                         </Style>
                     </ComboBox.ItemContainerStyle>
                 </ComboBox>
                 <Button Content="Open Saves Folder" Margin="0,0,10,40" Click="OpenSavesFolder_Click" Height="22"
                         VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="105"
-                        Background="{DynamicResource ButtonBackgroundBrush}"
-                        BorderBrush="{DynamicResource ButtonBorderBrush}"
-                        Foreground="{DynamicResource ButtonForegroundBrush}"/>
+                        Style="{StaticResource ThemedButtonStyle}"/>
             </Grid>
         </DockPanel>
     </Border>
