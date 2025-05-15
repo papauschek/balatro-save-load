@@ -71,6 +71,7 @@ namespace BalatroSaveAndLoad
         private DispatcherTimer statusResetTimer = new DispatcherTimer();
         private DispatcherTimer errorCheckTimer = new DispatcherTimer();
         private DispatcherTimer countdownTimer = new DispatcherTimer();
+        private DispatcherTimer cleanupTimer = new DispatcherTimer();
         
         // Track current error state
         private bool hasActiveError = false;
@@ -80,6 +81,10 @@ namespace BalatroSaveAndLoad
         // For countdown timer
         private DateTime nextAutoSaveTime;
         private double autoSaveIntervalMinutes;
+
+        // For auto-cleanup
+        private TimeSpan cleanupTimeSpan = TimeSpan.FromDays(7); // Default to 7 days
+        private readonly Dictionary<int, TimeSpan> cleanupOptions = new Dictionary<int, TimeSpan>();
 
         public MainWindow()
         {
@@ -102,6 +107,10 @@ namespace BalatroSaveAndLoad
             // Configure countdown timer
             countdownTimer.Interval = TimeSpan.FromSeconds(1);
             countdownTimer.Tick += CountdownTimer_Tick;
+            
+            // Configure cleanup timer
+            cleanupTimer.Interval = TimeSpan.FromHours(1); // Check once per hour
+            cleanupTimer.Tick += CleanupTimer_Tick;
 
             LoadList();
 
@@ -110,8 +119,23 @@ namespace BalatroSaveAndLoad
                 ProfileComboBox.Items.Add(String.Format("Profile {0}", i));
                 MinuteComboBox.Items.Add(String.Format("{0} minutes", i));
             }
+            
+            // Setup cleanup options
+            cleanupOptions.Add(0, TimeSpan.FromDays(1));
+            cleanupOptions.Add(1, TimeSpan.FromDays(3));
+            cleanupOptions.Add(2, TimeSpan.FromDays(7));
+            cleanupOptions.Add(3, TimeSpan.FromDays(14));
+            cleanupOptions.Add(4, TimeSpan.FromDays(30));
+            
+            CleanupTimeComboBox.Items.Add("1 day");
+            CleanupTimeComboBox.Items.Add("3 days");
+            CleanupTimeComboBox.Items.Add("7 days");
+            CleanupTimeComboBox.Items.Add("14 days");
+            CleanupTimeComboBox.Items.Add("30 days");
+            
             ProfileComboBox.SelectedIndex = 0;
             MinuteComboBox.SelectedIndex = 0;
+            CleanupTimeComboBox.SelectedIndex = 2; // Default to 7 days
 
             // Enable multiple selection for FileListBox
             FileListBox.SelectionMode = SelectionMode.Extended;
@@ -590,6 +614,106 @@ namespace BalatroSaveAndLoad
             if (e.Key == Key.Delete)
             {
                 DeleteSelectedSaves();
+            }
+        }
+
+        private void CleanupTimer_Tick(object? sender, EventArgs e)
+        {
+            CleanupOldFiles();
+        }
+        
+        private void CleanupOldFiles()
+        {
+            try
+            {
+                if (!AutoCleanCheckBox.IsChecked == true)
+                    return;
+                    
+                var files = Directory.GetFiles(directoryPath, "*.jkr");
+                int cleanedCount = 0;
+                
+                foreach (var file in files)
+                {
+                    var fileName = Path.GetFileName(file);
+                    
+                    // Check if this is an auto-save by looking for the pattern
+                    if (IsAutoSaveFile(fileName))
+                    {
+                        var creationTime = File.GetCreationTime(file);
+                        var fileAge = DateTime.Now - creationTime;
+                        
+                        if (fileAge > cleanupTimeSpan)
+                        {
+                            File.Delete(file);
+                            cleanedCount++;
+                        }
+                    }
+                }
+                
+                if (cleanedCount > 0)
+                {
+                    LoadList();
+                    SetSuccessStatus($"Auto-cleaned {cleanedCount} old save(s)");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't display - this happens in the background
+                Debug.WriteLine($"Error during auto-cleanup: {ex.Message}");
+            }
+        }
+        
+        private bool IsAutoSaveFile(string fileName)
+        {
+            // An auto-save is identified by the pattern: P{profileNumber} {date-time} {deckName} Round {roundNumber}.jkr
+            // We can check if it matches our file naming pattern
+            var pattern = @"^P\d+ \d{4}-\d{2}-\d{2} \d{2}-\d{2}-\d{2}.*Round \d+\.jkr$";
+            return Regex.IsMatch(fileName, pattern);
+        }
+        
+        private void AutoCleanCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            UpdateAutoClean();
+        }
+        
+        private void AutoCleanCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            UpdateAutoClean();
+        }
+        
+        private void CleanupTimeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsInitialized && AutoCleanCheckBox.IsChecked == true)
+            {
+                UpdateAutoClean();
+            }
+        }
+        
+        private void UpdateAutoClean()
+        {
+            if (AutoCleanCheckBox.IsChecked == true)
+            {
+                if (CleanupTimeComboBox.SelectedIndex >= 0 && 
+                    cleanupOptions.TryGetValue(CleanupTimeComboBox.SelectedIndex, out TimeSpan selectedTimeSpan))
+                {
+                    cleanupTimeSpan = selectedTimeSpan;
+                    cleanupTimer.Start();
+                    
+                    // Run cleanup immediately
+                    CleanupOldFiles();
+                    
+                    SetSuccessStatus($"Auto-clean enabled: files older than {CleanupTimeComboBox.Text}");
+                }
+                else
+                {
+                    AutoCleanCheckBox.IsChecked = false;
+                    SetErrorStatus("Invalid cleanup time selection");
+                }
+            }
+            else
+            {
+                cleanupTimer.Stop();
+                SetSuccessStatus("Auto-clean disabled");
             }
         }
 
