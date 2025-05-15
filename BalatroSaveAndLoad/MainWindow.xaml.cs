@@ -37,10 +37,49 @@ namespace BalatroSaveAndLoad
                 }
             }
         }
+        
+        private string _countdownText = "";
+        public string CountdownText
+        {
+            get => _countdownText;
+            set
+            {
+                if (_countdownText != value)
+                {
+                    _countdownText = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        
+        private Visibility _countdownVisibility = Visibility.Collapsed;
+        public Visibility CountdownVisibility
+        {
+            get => _countdownVisibility;
+            set
+            {
+                if (_countdownVisibility != value)
+                {
+                    _countdownVisibility = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BalatroSaveAndLoad");
         private DispatcherTimer timer = new DispatcherTimer();
         private DispatcherTimer statusResetTimer = new DispatcherTimer();
+        private DispatcherTimer errorCheckTimer = new DispatcherTimer();
+        private DispatcherTimer countdownTimer = new DispatcherTimer();
+        
+        // Track current error state
+        private bool hasActiveError = false;
+        private string currentErrorMessage = string.Empty;
+        private Func<bool>? errorConditionChecker = null;
+        
+        // For countdown timer
+        private DateTime nextAutoSaveTime;
+        private double autoSaveIntervalMinutes;
 
         public MainWindow()
         {
@@ -51,8 +90,18 @@ namespace BalatroSaveAndLoad
 
             timer.Tick += Timer_Tick;
 
+            // Configure status reset timer
             statusResetTimer.Interval = TimeSpan.FromSeconds(5);
             statusResetTimer.Tick += StatusResetTimer_Tick;
+            
+            // Configure error check timer
+            errorCheckTimer.Interval = TimeSpan.FromSeconds(2);
+            errorCheckTimer.Tick += ErrorCheckTimer_Tick;
+            errorCheckTimer.Start(); // Start the error check timer
+            
+            // Configure countdown timer
+            countdownTimer.Interval = TimeSpan.FromSeconds(1);
+            countdownTimer.Tick += CountdownTimer_Tick;
 
             LoadList();
 
@@ -79,29 +128,44 @@ namespace BalatroSaveAndLoad
         {
             if (isError)
             {
-                StatusBarItem.Background = Brushes.DarkRed;
-                StatusBarItem.Foreground = Brushes.White;
+                MainStatusBar.Background = Brushes.DarkRed;
+                MainStatusBar.Foreground = Brushes.White;
             }
             else
             {
-                StatusBarItem.Background = Brushes.LightGray;
-                StatusBarItem.Foreground = Brushes.Black;
+                MainStatusBar.Background = Brushes.LightGray;
+                MainStatusBar.Foreground = Brushes.Black;
             }
         }
 
-        private void SetErrorStatus(string errorMessage)
+        private void SetErrorStatus(string errorMessage, Func<bool>? conditionChecker = null)
         {
+            // Set the error state
+            hasActiveError = true;
+            currentErrorMessage = errorMessage;
+            errorConditionChecker = conditionChecker;
+            
+            // Update UI
             Status = $"Error: {errorMessage}";
             UpdateStatusDisplay(true);
             FlashWindow();
 
-            // Reset status after a delay
-            statusResetTimer.Stop();
-            statusResetTimer.Start();
+            // Reset status after a delay only if no condition checker is provided
+            if (errorConditionChecker == null)
+            {
+                statusResetTimer.Stop();
+                statusResetTimer.Start();
+            }
         }
 
         private void SetSuccessStatus(string message)
         {
+            // Clear any error state
+            hasActiveError = false;
+            currentErrorMessage = string.Empty;
+            errorConditionChecker = null;
+            
+            // Update UI
             Status = message;
             UpdateStatusDisplay(false);
 
@@ -113,8 +177,78 @@ namespace BalatroSaveAndLoad
         private void StatusResetTimer_Tick(object? sender, EventArgs e)
         {
             statusResetTimer.Stop();
-            Status = "Ready";
-            UpdateStatusDisplay(false);
+            
+            // Only reset to "Ready" if there's no active error
+            if (!hasActiveError)
+            {
+                Status = "Ready";
+                UpdateStatusDisplay(false);
+            }
+        }
+        
+        private void ErrorCheckTimer_Tick(object? sender, EventArgs e)
+        {
+            // Check if there's an active error with a condition checker
+            if (hasActiveError && errorConditionChecker != null)
+            {
+                try
+                {
+                    // Check if the error condition is resolved
+                    bool isResolved = errorConditionChecker();
+                    if (isResolved)
+                    {
+                        // Error is resolved, clear error state
+                        hasActiveError = false;
+                        currentErrorMessage = string.Empty;
+                        errorConditionChecker = null;
+                        Status = "Ready";
+                        UpdateStatusDisplay(false);
+                    }
+                }
+                catch
+                {
+                    // If checking causes an exception, keep the error state
+                }
+            }
+        }
+        
+        private void CountdownTimer_Tick(object? sender, EventArgs e)
+        {
+            if (AutoCheckBox.IsChecked == true)
+            {
+                TimeSpan timeLeft = nextAutoSaveTime - DateTime.Now;
+                if (timeLeft.TotalSeconds <= 0)
+                {
+                    // We've reached the time - timer event will handle the save
+                    // Just update for next interval
+                    UpdateNextAutoSaveTime();
+                }
+                else
+                {
+                    UpdateCountdownDisplay(timeLeft);
+                }
+            }
+        }
+        
+        private void UpdateCountdownDisplay(TimeSpan timeLeft)
+        {
+            if (timeLeft.TotalHours >= 1)
+            {
+                CountdownText = $"Next auto-save: {timeLeft.Hours}h {timeLeft.Minutes}m {timeLeft.Seconds}s";
+            }
+            else if (timeLeft.TotalMinutes >= 1)
+            {
+                CountdownText = $"Next auto-save: {timeLeft.Minutes}m {timeLeft.Seconds}s";
+            }
+            else
+            {
+                CountdownText = $"Next auto-save: {timeLeft.Seconds}s";
+            }
+        }
+        
+        private void UpdateNextAutoSaveTime()
+        {
+            nextAutoSaveTime = DateTime.Now.AddMinutes(autoSaveIntervalMinutes);
         }
 
         private void FlashWindow()
@@ -160,7 +294,10 @@ namespace BalatroSaveAndLoad
             {
                 if (!File.Exists(saveFile))
                 {
-                    SetErrorStatus($"Save file not found for Profile {profileNumber}");
+                    SetErrorStatus(
+                        $"Save file not found for Profile {profileNumber}", 
+                        () => File.Exists(saveFile) // Condition will be true when file exists
+                    );
                     return;
                 }
 
@@ -193,6 +330,12 @@ namespace BalatroSaveAndLoad
                         SetSuccessStatus($"File already exists: {fileName}");
                     }
                 }
+                
+                // Reset auto-save countdown if this was an auto-save
+                if (AutoCheckBox.IsChecked == true)
+                {
+                    UpdateNextAutoSaveTime();
+                }
             }
             catch (Exception ex)
             {
@@ -218,7 +361,10 @@ namespace BalatroSaveAndLoad
                 // Check that the file exists first, then copy it
                 if (!File.Exists(filePath))
                 {
-                    SetErrorStatus($"The selected file does not exist: {selectedItem}");
+                    SetErrorStatus(
+                        $"The selected file does not exist: {selectedItem}",
+                        () => File.Exists(filePath) // Condition will be true when file exists
+                    );
                     return;
                 }
 
@@ -255,6 +401,14 @@ namespace BalatroSaveAndLoad
         private void FileListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             LoadButton.IsEnabled = FileListBox.SelectedItems.Count == 1;
+            
+            // If error was about needing to select a file, check if it's resolved
+            if (hasActiveError && currentErrorMessage.Contains("select") && FileListBox.SelectedItems.Count == 1)
+            {
+                hasActiveError = false;
+                Status = "Ready";
+                UpdateStatusDisplay(false);
+            }
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -269,19 +423,30 @@ namespace BalatroSaveAndLoad
                 double minutes = GetSelectedMinutes();
                 if (minutes > 0)
                 {
+                    autoSaveIntervalMinutes = minutes;
                     timer.Interval = TimeSpan.FromMinutes(minutes);
                     timer.Start();
+                    
+                    // Set up the countdown timer
+                    UpdateNextAutoSaveTime();
+                    countdownTimer.Start();
+                    CountdownVisibility = Visibility.Visible;
+                    
                     SetSuccessStatus($"Auto-save enabled: every {minutes} {(minutes == 1 ? "minute" : "minutes")}");
                 }
                 else
                 {
                     AutoCheckBox.IsChecked = false;
+                    countdownTimer.Stop();
+                    CountdownVisibility = Visibility.Collapsed;
                     SetErrorStatus("Invalid time interval. Please enter a positive number.");
                 }
             }
             else
             {
                 timer.Stop();
+                countdownTimer.Stop();
+                CountdownVisibility = Visibility.Collapsed;
                 SetSuccessStatus("Auto-save disabled");
             }
         }
@@ -319,6 +484,18 @@ namespace BalatroSaveAndLoad
             if (AutoCheckBox.IsChecked == true)
             {
                 UpdateAutoSave();
+            }
+            
+            // If there was an error about invalid time interval, check if it's resolved
+            if (hasActiveError && currentErrorMessage.Contains("time interval"))
+            {
+                double minutes = GetSelectedMinutes();
+                if (minutes > 0)
+                {
+                    hasActiveError = false;
+                    Status = "Ready";
+                    UpdateStatusDisplay(false);
+                }
             }
         }
 

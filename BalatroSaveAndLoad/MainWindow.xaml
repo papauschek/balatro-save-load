@@ -23,13 +23,18 @@
         <Button Content="Save" Margin="203,10,10,0" VerticalAlignment="Top" Click="Save_Button_Click" Height="22" />
         <ComboBox Margin="10,10,0,0" VerticalAlignment="Top" Name="ProfileComboBox" HorizontalAlignment="Left"
                   Width="188" />
-        <StatusBar VerticalAlignment="Bottom"
+        <StatusBar Name="MainStatusBar"
+                   VerticalAlignment="Bottom"
                    Visibility="Visible"
-                   Margin="10,0,10,10" 
-                   Height = "20"
+                   Margin="10,0,10,10"
+                   Height="20"
+                   Background="LightGray"
                    Width="Auto">
-            <StatusBarItem Name="StatusBarItem" Width="Auto" Background="LightGray" Foreground="Black">
+            <StatusBarItem Width="Auto" Background="Transparent">
                 <TextBlock Text="{Binding Status}" />
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right" Background="Transparent" Visibility="{Binding CountdownVisibility}">
+                <TextBlock Text="{Binding CountdownText}" />
             </StatusBarItem>
         </StatusBar>
         <Button Content="Load" Margin="10,0,120,40" Click="Load_Button_Click" Height="22" VerticalAlignment="Bottom"
