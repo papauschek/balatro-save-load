@@ -5,53 +5,157 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BalatroSaveAndLoad"
         mc:Ignorable="d"
-        Title="Balatro Save And Load" Height="600" Width="450" Icon="/save-and-load.png">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <ListBox Name="FileListBox" Margin="10,75,10,75"
-                 SelectionChanged="FileListBox_SelectionChanged"
-                 SelectionMode="Extended"
-                 KeyDown="FileListBox_KeyDown">
-            <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Remove" Click="RemoveSave_Click" />
-                </ContextMenu>
-            </ListBox.ContextMenu>
-        </ListBox>
-        <Button Content="Save" Margin="203,10,10,0" VerticalAlignment="Top" Click="Save_Button_Click" Height="22" />
-        <ComboBox Margin="10,10,0,0" VerticalAlignment="Top" Name="ProfileComboBox" HorizontalAlignment="Left"
-                  Width="188" />
-        <StatusBar Name="MainStatusBar"
-                   VerticalAlignment="Bottom"
-                   Visibility="Visible"
-                   Margin="10,0,10,10"
-                   Height="20"
-                   Background="LightGray"
-                   Width="Auto">
-            <StatusBarItem Width="Auto" Background="Transparent">
-                <TextBlock Text="{Binding Status}" />
-            </StatusBarItem>
-            <StatusBarItem HorizontalAlignment="Right" Background="Transparent" Visibility="{Binding CountdownVisibility}">
-                <TextBlock Text="{Binding CountdownText}" />
-            </StatusBarItem>
-        </StatusBar>
-        <Button Content="Load" Margin="10,0,120,40" Click="Load_Button_Click" Height="22" VerticalAlignment="Bottom"
-                Name="LoadButton" IsEnabled="False" />
-        <CheckBox Name="AutoCheckBox" Content="Auto Save every" Height="24" Margin="0,46,128,0" VerticalAlignment="Top"
-                  Checked="CheckBox_Checked" HorizontalAlignment="Right" Width="106" />
-        <ComboBox Name="MinuteComboBox"
-                  Margin="0,42,10,0"
-                  VerticalAlignment="Top"
-                  HorizontalAlignment="Right"
-                  Width="105"
-                  SelectionChanged="MinuteComboBox_SelectionChanged"
-                  IsEditable="True"
-                  PreviewTextInput="MinuteComboBox_PreviewTextInput"
-                  KeyDown="MinuteComboBox_KeyDown"
-                  TextBoxBase.TextChanged="MinuteComboBox_TextChanged" />
-        <Button Content="Open Saves Folder" Margin="0,0,10,40" Click="OpenSavesFolder_Click" Height="22"
-                VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="105" />
-    </Grid>
+        Title="Balatro Save And Load" Height="600" Width="450" Icon="/save-and-load.png"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Foreground="{DynamicResource TextForegroundBrush}"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="CanMinimize">
+    <Border Background="{DynamicResource WindowBackgroundBrush}">
+        <DockPanel LastChildFill="True">
+            <!-- Custom Title Bar -->
+            <Grid DockPanel.Dock="Top" Height="32" Background="{DynamicResource TitleBarBackgroundBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <!-- Drag area (covers entire title bar, above all controls) -->
+                <Rectangle Grid.ColumnSpan="8"
+                           Margin="2"
+                           Fill="Transparent"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Height="32"
+                           Panel.ZIndex="10"
+                           MinWidth="440"
+                           MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
+                <TextBlock Text="Balatro Save And Load"
+                           VerticalAlignment="Center"
+                           Margin="10,0,10,0"
+                           FontWeight="Bold"
+
+                           MinWidth="350"
+                           Height="22"
+                           Foreground="{DynamicResource TitleBarForegroundBrush}"
+                           Panel.ZIndex="5"/>
+                <Button Grid.Column="1"
+                        Width="32" Height="32"
+                        Content="🗕"
+                        ToolTip="Minimize"
+                        Click="MinimizeButton_Click"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        Foreground="{DynamicResource TitleBarForegroundBrush}"
+                        Focusable="False"
+                        Panel.ZIndex="20"/>
+                <Button Grid.Column="2"
+                        Width="32" Height="32"
+                        Content="✕"
+                        ToolTip="Close"
+                        Click="CloseButton_Click"
+                        Background="DarkRed"
+                        BorderBrush="Transparent"
+                        Foreground="{DynamicResource TitleBarForegroundBrush}"
+                        Focusable="False"
+                        Panel.ZIndex="20"/>
+            </Grid>
+            <!-- Main Content -->
+            <Grid Margin="0,0,0,0">
+                <ListBox Name="FileListBox" Margin="10,75,10,75"
+                         SelectionChanged="FileListBox_SelectionChanged"
+                         SelectionMode="Extended"
+                         KeyDown="FileListBox_KeyDown"
+                         Background="{DynamicResource ListBoxBackgroundBrush}"
+                         BorderBrush="{DynamicResource ListBoxBorderBrush}"
+                         Foreground="{DynamicResource ControlForegroundBrush}">
+                    <ListBox.Resources>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ControlForegroundBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource ListBoxItemSelectedBackgroundBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource ListBoxItemSelectedForegroundBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.Resources>
+                    <ListBox.ContextMenu>
+                        <ContextMenu Background="{DynamicResource ControlBackgroundBrush}" 
+                                     BorderBrush="{DynamicResource ControlBorderBrush}"
+                                     Foreground="{DynamicResource ControlForegroundBrush}">
+                            <MenuItem Header="Remove" Click="RemoveSave_Click" 
+                                      Background="{DynamicResource ControlBackgroundBrush}"
+                                      Foreground="{DynamicResource ControlForegroundBrush}"/>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+                <Button Content="Save" Margin="203,10,10,0" VerticalAlignment="Top" Click="Save_Button_Click" Height="22"
+                        Background="{DynamicResource ButtonBackgroundBrush}"
+                        BorderBrush="{DynamicResource ButtonBorderBrush}"
+                        Foreground="{DynamicResource ButtonForegroundBrush}"/>
+                <ComboBox Margin="10,10,0,0" VerticalAlignment="Top" Name="ProfileComboBox" HorizontalAlignment="Left"
+                          Width="188"
+                          Background="{DynamicResource ComboBoxBackgroundBrush}"
+                          BorderBrush="{DynamicResource ComboBoxBorderBrush}"
+                          Foreground="{DynamicResource ComboBoxForegroundBrush}">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="{DynamicResource ComboBoxForegroundBrush}"/>
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
+                <StatusBar Name="MainStatusBar"
+                           VerticalAlignment="Bottom"
+                           Visibility="Visible"
+                           Margin="10,0,10,10"
+                           Height="20"
+                           Background="{DynamicResource StatusBarBackgroundBrush}"
+                           Foreground="{DynamicResource StatusBarForegroundBrush}"
+                           Width="Auto">
+                    <StatusBarItem Width="Auto" Background="Transparent">
+                        <TextBlock Text="{Binding Status}" Foreground="{DynamicResource StatusBarForegroundBrush}" />
+                    </StatusBarItem>
+                    <StatusBarItem HorizontalAlignment="Right" Background="Transparent" Visibility="{Binding CountdownVisibility}">
+                        <TextBlock Text="{Binding CountdownText}" Foreground="{DynamicResource StatusBarForegroundBrush}" />
+                    </StatusBarItem>
+                </StatusBar>
+                <Button Content="Load" Margin="10,0,120,40" Click="Load_Button_Click" Height="22" VerticalAlignment="Bottom"
+                        Name="LoadButton" IsEnabled="False"
+                        Background="{DynamicResource ButtonBackgroundBrush}"
+                        BorderBrush="{DynamicResource ButtonBorderBrush}"
+                        Foreground="{DynamicResource ButtonForegroundBrush}"/>
+                <CheckBox Name="AutoCheckBox" Content="Auto Save every" Height="24" Margin="0,46,128,0" VerticalAlignment="Top"
+                          Checked="CheckBox_Checked" HorizontalAlignment="Right" Width="106"
+                          Background="{DynamicResource CheckBoxBackgroundBrush}"
+                          BorderBrush="{DynamicResource CheckBoxBorderBrush}"
+                          Foreground="{DynamicResource CheckBoxForegroundBrush}"/>
+                <ComboBox Name="MinuteComboBox"
+                          Margin="0,42,10,0"
+                          VerticalAlignment="Top"
+                          HorizontalAlignment="Right"
+                          Width="105"
+                          SelectionChanged="MinuteComboBox_SelectionChanged"
+                          IsEditable="True"
+                          PreviewTextInput="MinuteComboBox_PreviewTextInput"
+                          KeyDown="MinuteComboBox_KeyDown"
+                          TextBoxBase.TextChanged="MinuteComboBox_TextChanged"
+                          Background="{DynamicResource ComboBoxBackgroundBrush}"
+                          BorderBrush="{DynamicResource ComboBoxBorderBrush}"
+                          Foreground="{DynamicResource ComboBoxForegroundBrush}">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="{DynamicResource ComboBoxForegroundBrush}"/>
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
+                <Button Content="Open Saves Folder" Margin="0,0,10,40" Click="OpenSavesFolder_Click" Height="22"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="105"
+                        Background="{DynamicResource ButtonBackgroundBrush}"
+                        BorderBrush="{DynamicResource ButtonBorderBrush}"
+                        Foreground="{DynamicResource ButtonForegroundBrush}"/>
+            </Grid>
+        </DockPanel>
+    </Border>
 </Window>

@@ -133,8 +133,8 @@ namespace BalatroSaveAndLoad
             }
             else
             {
-                MainStatusBar.Background = Brushes.LightGray;
-                MainStatusBar.Foreground = Brushes.Black;
+                MainStatusBar.Background = (Brush)FindResource("StatusBarBackgroundBrush");
+                MainStatusBar.Foreground = (Brush)FindResource("StatusBarForegroundBrush");
             }
         }
 
@@ -590,6 +590,30 @@ namespace BalatroSaveAndLoad
             if (e.Key == Key.Delete)
             {
                 DeleteSelectedSaves();
+            }
+        }
+
+        // Custom title bar handlers
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                // Optional: maximize/restore on double-click
+                // WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            }
+            else
+            {
+                DragMove();
             }
         }
     }
