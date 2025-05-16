@@ -17,7 +17,7 @@ A simple tool that allows you to save your Balatro game at any point, and load i
 Download the latest release here: https://github.com/papauschek/balatro-save-load/releases/tag/v1.2.0
 
 ## Screenshot
-![Screenshot 2025-05-16 160243](https://github.com/user-attachments/assets/eb22ed61-3d68-4de2-9251-1297b9d62c21)
+![Screenshot 2025-05-16 160647](https://github.com/user-attachments/assets/7a75374d-82e9-408c-b9a3-20643780b37b)
 
 ## Build Status
 
