@@ -3,15 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Debug Log"
         Height="400"
-        Width="600"
-        Background="{DynamicResource WindowBackgroundBrush}"
-        Foreground="{DynamicResource TextForegroundBrush}">
+        Width="600">
     <Grid>
         <ListBox Name="DebugListBox"
                  ItemsSource="{Binding DebugLog, RelativeSource={RelativeSource AncestorType=Window}}"
-                 Background="{DynamicResource ListBoxBackgroundBrush}"
-                 Foreground="{DynamicResource ControlForegroundBrush}"
-                 BorderBrush="{DynamicResource ListBoxBorderBrush}"
                  Margin="10"
                  />
     </Grid>
